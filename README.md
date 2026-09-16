@@ -13,13 +13,7 @@ IT 管理员提供用户/部门、空间与配额等治理能力。文件浏览�
 
 ## 🌐 多语言 / Translations
 
-| 语言 | README | 功能清单 | API 指南 | 代码阅读指南 | 架构 | 编译与部署 | 测试 |
-|---|---|---|---|---|---|---|---|
-| English | [README](DOC/i18n/en/README.md) | [Feature List](DOC/i18n/en/01-Feature-List.md) | [API Guide](DOC/i18n/en/02-API-Guide.md) | [Code Reading Guide](DOC/i18n/en/03-Code-Reading-Guide.md) | [Architecture](DOC/i18n/en/04-Architecture.md) | [Build & Deploy](DOC/i18n/en/05-Build-Deploy.md) | [Test](DOC/i18n/en/06-Test-Document.md) |
-| Deutsch | [README](DOC/i18n/de/README.md) | [Funktionsübersicht](DOC/i18n/de/01-Funktionsuebersicht.md) | [API-Anleitung](DOC/i18n/de/02-API-Anleitung.md) | [Code-Leseanleitung](DOC/i18n/de/03-Code-Leseanleitung.md) | [Architektur](DOC/i18n/de/04-Architektur.md) | [Build & Bereitstellung](DOC/i18n/de/05-Build-Bereitstellung.md) | [Testdokument](DOC/i18n/de/06-Testdokument.md) |
-| Français | [README](DOC/i18n/fr/README.md) | [Liste des fonctionnalités](DOC/i18n/fr/01-Liste-Fonctionnalites.md) | [Guide API](DOC/i18n/fr/02-Guide-API.md) | [Guide de lecture du code](DOC/i18n/fr/03-Guide-Lecture.md) | [Architecture](DOC/i18n/fr/04-Architecture.md) | [Build & Déploiement](DOC/i18n/fr/05-Build-Deploiement.md) | [Document de test](DOC/i18n/fr/06-Document-Test.md) |
-| Suomi | [README](DOC/i18n/fi/README.md) | [Ominaisuusluettelo](DOC/i18n/fi/01-Ominaisuusluettelo.md) | [API-opas](DOC/i18n/fi/02-API-opas.md) | [Koodin lukemisen opas](DOC/i18n/fi/03-Koodin-lukemisen-opas.md) | [Arkkitehtuuri](DOC/i18n/fi/04-Arkkitehtuuri.md) | [Rakennus ja käyttöönotto](DOC/i18n/fi/05-Rakennus-ja-kayttoonotto.md) | [Testidokumentti](DOC/i18n/fi/06-Testidokumentti.md) |
-| Русский | [README](DOC/i18n/ru/README.md) | [Список возможностей](DOC/i18n/ru/01-Funkcionalnyj-spisok.md) | [Руководство API](DOC/i18n/ru/02-Rukovodstvo-API.md) | [Руководство по чтению кода](DOC/i18n/ru/03-Rukovodstvo-po-chteniyu.md) | [Архитектура](DOC/i18n/ru/04-Arhitektura.md) | [Сборка и развёртывание](DOC/i18n/ru/05-Sborka-i-razvertyvanie.md) | [Тестовая документация](DOC/i18n/ru/06-Testovaya-dokumentaciya.md) |
+[中文](README.md) | [English](DOC/i18n/en/README.md) | [Deutsch](DOC/i18n/de/README.md) | [Français](DOC/i18n/fr/README.md) | [Suomi](DOC/i18n/fi/README.md) | [Русский](DOC/i18n/ru/README.md)
 
 ---
 
