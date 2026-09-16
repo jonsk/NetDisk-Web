@@ -1,27 +1,143 @@
-# web · 网盘前端（管理后台）
+# NetDisk Web（网盘前端）
 
-> 独立仓库（从原 monorepo `netdisk` 的 `web/` 拆分而来，保留历史）。
-> Vue 3 + TypeScript + pnpm workspace，单一构建目标：
+> 企业网盘「NetDisk」的管理后台前端。Vue 3 + TypeScript + pnpm workspace，
+> 通过 OpenAPI 契约与服务端、桌面端共享同一套接口模型。
 
-- `apps/admin` — 管理后台（仅管理员：用户/部门/空间/配额）— Naive UI
-- `packages/api` — 契约生成的基础库（DTO/类型）
+NetDisk 是一套企业级网盘系统：本仓库是它的 **Web 前端（管理后台）**，面向
+IT 管理员提供用户/部门、空间与配额等治理能力。文件浏览与传输在桌面客户端完成，
+本仓库**刻意不实现在线预览与文件传输**，这是产品边界而非未完成项。
 
-## 常用命令
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+
+---
+
+## 🌐 多语言
+
+| 语言 | 文档 |
+|---|---|
+| **简体中文** | [DOC/](DOC/) |
+| **English** | [DOC/i18n/en/](DOC/i18n/en/) |
+| **Deutsch** | [DOC/i18n/de/](DOC/i18n/de/) |
+| **Français** | [DOC/i18n/fr/](DOC/i18n/fr/) |
+| **Русский** | [DOC/i18n/ru/](DOC/i18n/ru/) |
+
+---
+
+## ✨ 特性
+
+- **管理后台（`apps/admin`）**：仅管理功能，登录 / 概览 / 用户与部门 / 空间治理，
+  基于 [Naive UI](https://www.naiveui.com) 构建。
+- **契约单源**：所有前后端共享的接口模型由 `DOC/api/openapi.yaml` 生成，
+  双向 diff 门禁保证生成物永不与契约脱节。
+- **统一 API 客户端（`packages/api`）**：类型化 REST 客户端，内建结构化错误、
+  令牌注入与 401 静默刷新；**手写 fetch 被静态门禁禁止**，全部请求收敛于此。
+- **工程门禁（`scripts/`）**：契约一致性、前端纪律（分端受众/令牌存储/守卫/
+  静默刷新等 7 条）均为零依赖静态检查，可直接在 CI 运行。
+- **可嵌入部署**：产物经 `pnpm build` 拷入服务端由 Go `embed` 提供，同源单端口。
+
+## 🧰 技术栈
+
+| 领域 | 选型 |
+|---|---|
+| 框架 | Vue 3（Composition API / `<script setup>`） |
+| 构建 | Vite 5 |
+| 状态 | Pinia |
+| UI | Naive UI |
+| 路由 | Vue Router 4（History 模式，挂在 `/admin/` 子路径） |
+| 类型 | TypeScript（strict）、vue-tsc |
+| 包管理 | pnpm（workspace, ≥9.15.9） |
+| 契约 | openapi-typescript（OpenAPI 3.1） |
+
+## 📦 快速开始
+
+环境要求：Node ≥ 20、pnpm ≥ 9.15.9。
 
 ```bash
+# 安装依赖（使用 lockfile 的精确版本）
 pnpm install --frozen-lockfile
-pnpm build            # 产物到 apps/admin/dist（AD1-4：供 Go embed 拷贝）
-pnpm -r typecheck     # 类型检查
-pnpm check:api        # 契约生成物一致性门禁（openapi 双向 diff）
-pnpm check:rules      # 前端纪律静态检查
+
+# 开发（Vite dev server，/api 代理到 http://127.0.0.1:8080）
+pnpm dev:admin
+
+# 生产构建（产物输出到 apps/admin/dist，供服务端 embed 拷贝）
+pnpm build
+
+# 类型检查 / 契约门禁 / 前端纪律
+pnpm -r typecheck
+pnpm check:api
+pnpm check:rules
 ```
 
-## 契约
+## 🔁 常用命令
 
-接口契约唯一真相在项目文档 `api/openapi.yaml`（`D:\WorkSpace\GO\Doc\api\openapi.yaml`）；
-多端模型由它生成，变更需过 `check:api` 双向 diff 门禁。
+```bash
+pnpm dev:admin     # 启动管理后台开发服务器（端口 5174）
+pnpm build         # 构建管理后台
+pnpm typecheck     # 全仓类型检查
+pnpm lint          # 全仓 lint
+pnpm gen:api       # 从 openapi.yaml 重新生成 TS 类型
+pnpm gen:csharp    # （可选）从契约生成桌面端 C# 模型
+pnpm check:api     # 契约生成物一致性门禁（双向 diff）
+pnpm lint:contract # 契约 lint：禁止手写 fetch / 手写同名 DTO
+pnpm check:rules   # 前端纪律静态检查（7 条）
+```
 
-## 说明
+## 📁 仓库结构
 
-前端产物须先 `pnpm build` 再编译 Go（`/admin` 由服务端 `embed` 提供）。
-本仓库不含架构设计正文（见 `Server-Ent` / `Server-com` 的 README 指向的设计文档）。
+```
+.
+├─ apps/admin/          # 管理后台（登录/概览/用户部门/空间治理）
+│  └─ src/
+│     ├─ layouts/       #   AdminLayout：侧边栏 + 顶栏
+│     ├─ router/        #   路由与守卫
+│     ├─ stores/        #   Pinia 状态（认证 store）
+│     └─ views/         #   页面视图
+├─ packages/api/        # 契约生成的基础库（类型 + REST 客户端 + 错误模型）
+├─ scripts/             # 工程门禁脚本
+├─ DOC/                 # 项目文档 + OpenAPI 契约（DOC/api/openapi.yaml）
+```
+
+## 📚 文档
+
+| 编号 | 文档 | 说明 |
+|---|---|---|
+| 01 | [DOC/01-功能清单.md](DOC/01-功能清单.md) | 各模块功能清单 |
+| 02 | [DOC/02-API指南.md](DOC/02-API指南.md) | 契约与 API 客户端使用指南 |
+| 03 | [DOC/03-代码阅读指南.md](DOC/03-代码阅读指南.md) | 目录导览与代码组织说明 |
+| 04 | [DOC/04-架构设计文档.md](DOC/04-架构设计文档.md) | 架构决策与设计说明 |
+| 05 | [DOC/05-编译与部署.md](DOC/05-编译与部署.md) | 构建、产物嵌入与部署 |
+| 06 | [DOC/06-测试文档.md](DOC/06-测试文档.md) | 测试策略与门禁说明 |
+
+### 多语言文档
+
+以上文档已翻译为英语、德语、法语、俄语（[浏览全部](DOC/i18n/)）：
+
+| 编号 | English | Deutsch | Français | Русский |
+|---|---|---|---|---|
+| 01 | [Feature List](DOC/i18n/en/01-Feature-List.md) | [Funktionsübersicht](DOC/i18n/de/01-Funktionsuebersicht.md) | [Liste des fonctionnalités](DOC/i18n/fr/01-Liste-Fonctionnalites.md) | [Функциональный список](DOC/i18n/ru/01-Funkcionalnyj-spisok.md) |
+| 02 | [API Guide](DOC/i18n/en/02-API-Guide.md) | [API-Anleitung](DOC/i18n/de/02-API-Anleitung.md) | [Guide API](DOC/i18n/fr/02-Guide-API.md) | [Руководство по API](DOC/i18n/ru/02-Rukovodstvo-API.md) |
+| 03 | [Code Reading Guide](DOC/i18n/en/03-Code-Reading-Guide.md) | [Code-Leseanleitung](DOC/i18n/de/03-Code-Leseanleitung.md) | [Guide de lecture du code](DOC/i18n/fr/03-Guide-Lecture.md) | [Руководство по чтению кода](DOC/i18n/ru/03-Rukovodstvo-po-chteniyu.md) |
+| 04 | [Architecture](DOC/i18n/en/04-Architecture.md) | [Architektur](DOC/i18n/de/04-Architektur.md) | [Architecture](DOC/i18n/fr/04-Architecture.md) | [Архитектура](DOC/i18n/ru/04-Arhitektura.md) |
+| 05 | [Build & Deploy](DOC/i18n/en/05-Build-Deploy.md) | [Build & Bereitstellung](DOC/i18n/de/05-Build-Bereitstellung.md) | [Build & Déploiement](DOC/i18n/fr/05-Build-Deploiement.md) | [Сборка и развёртывание](DOC/i18n/ru/05-Sborka-i-razvertyvanie.md) |
+| 06 | [Test Document](DOC/i18n/en/06-Test-Document.md) | [Testdokument](DOC/i18n/de/06-Testdokument.md) | [Document de test](DOC/i18n/fr/06-Document-Test.md) | [Тестовая документация](DOC/i18n/ru/06-Testovaya-dokumentaciya.md) |
+
+## 🔐 契约与协作
+
+接口契约唯一真相在服务端仓 `Doc/api/openapi.yaml`；本仓在
+`DOC/api/openapi.yaml` 存放 vendor 副本（三处需同步：服务端/web/桌面端）。
+任何接口改动必须：
+1. 修改权威契约；
+2. 执行 `pnpm gen:api` 重新生成类型；
+3. 通过 `pnpm check:api` 双向 diff 门禁。
+
+严禁手改生成物 `packages/api/src/schema.gen.ts`。
+
+## 🚀 CI
+
+`.github/workflows/ci.yml` 在 push/PR 到 `master`/`main` 时执行：
+`pnpm install --frozen-lockfile → check:api → typecheck → check:rules → build →`
+校验 `apps/admin/dist/index.html` 存在（保证产物可被 embed）。
+
+## 📄 许可证
+
+[Apache License 2.0](LICENSE) · Copyright © 2026 NetDisk Contributors
