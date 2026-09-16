@@ -11,15 +11,15 @@ IT 管理员提供用户/部门、空间与配额等治理能力。文件浏览�
 
 ---
 
-## 🌐 多语言
+## 🌐 多语言 / Translations
 
-| 语言 | 文档 |
-|---|---|
-| **简体中文** | [DOC/](DOC/) |
-| **English** | [DOC/i18n/en/](DOC/i18n/en/) |
-| **Deutsch** | [DOC/i18n/de/](DOC/i18n/de/) |
-| **Français** | [DOC/i18n/fr/](DOC/i18n/fr/) |
-| **Русский** | [DOC/i18n/ru/](DOC/i18n/ru/) |
+| 语言 | README | 功能清单 | API 指南 | 代码阅读指南 | 架构 | 编译与部署 | 测试 |
+|---|---|---|---|---|---|---|---|
+| English | [README](DOC/i18n/en/README.md) | [Feature List](DOC/i18n/en/01-Feature-List.md) | [API Guide](DOC/i18n/en/02-API-Guide.md) | [Code Reading Guide](DOC/i18n/en/03-Code-Reading-Guide.md) | [Architecture](DOC/i18n/en/04-Architecture.md) | [Build & Deploy](DOC/i18n/en/05-Build-Deploy.md) | [Test](DOC/i18n/en/06-Test-Document.md) |
+| Deutsch | [README](DOC/i18n/de/README.md) | [Funktionsübersicht](DOC/i18n/de/01-Funktionsuebersicht.md) | [API-Anleitung](DOC/i18n/de/02-API-Anleitung.md) | [Code-Leseanleitung](DOC/i18n/de/03-Code-Leseanleitung.md) | [Architektur](DOC/i18n/de/04-Architektur.md) | [Build & Bereitstellung](DOC/i18n/de/05-Build-Bereitstellung.md) | [Testdokument](DOC/i18n/de/06-Testdokument.md) |
+| Français | [README](DOC/i18n/fr/README.md) | [Liste des fonctionnalités](DOC/i18n/fr/01-Liste-Fonctionnalites.md) | [Guide API](DOC/i18n/fr/02-Guide-API.md) | [Guide de lecture du code](DOC/i18n/fr/03-Guide-Lecture.md) | [Architecture](DOC/i18n/fr/04-Architecture.md) | [Build & Déploiement](DOC/i18n/fr/05-Build-Deploiement.md) | [Document de test](DOC/i18n/fr/06-Document-Test.md) |
+| Suomi | [README](DOC/i18n/fi/README.md) | [Ominaisuusluettelo](DOC/i18n/fi/01-Ominaisuusluettelo.md) | [API-opas](DOC/i18n/fi/02-API-opas.md) | [Koodin lukemisen opas](DOC/i18n/fi/03-Koodin-lukemisen-opas.md) | [Arkkitehtuuri](DOC/i18n/fi/04-Arkkitehtuuri.md) | [Rakennus ja käyttöönotto](DOC/i18n/fi/05-Rakennus-ja-kayttoonotto.md) | [Testidokumentti](DOC/i18n/fi/06-Testidokumentti.md) |
+| Русский | [README](DOC/i18n/ru/README.md) | [Список возможностей](DOC/i18n/ru/01-Funkcionalnyj-spisok.md) | [Руководство API](DOC/i18n/ru/02-Rukovodstvo-API.md) | [Руководство по чтению кода](DOC/i18n/ru/03-Rukovodstvo-po-chteniyu.md) | [Архитектура](DOC/i18n/ru/04-Arhitektura.md) | [Сборка и развёртывание](DOC/i18n/ru/05-Sborka-i-razvertyvanie.md) | [Тестовая документация](DOC/i18n/ru/06-Testovaya-dokumentaciya.md) |
 
 ---
 
@@ -108,18 +108,7 @@ pnpm check:rules   # 前端纪律静态检查（7 条）
 | 05 | [DOC/05-编译与部署.md](DOC/05-编译与部署.md) | 构建、产物嵌入与部署 |
 | 06 | [DOC/06-测试文档.md](DOC/06-测试文档.md) | 测试策略与门禁说明 |
 
-### 多语言文档
-
-以上文档已翻译为英语、德语、法语、俄语（[浏览全部](DOC/i18n/)）：
-
-| 编号 | English | Deutsch | Français | Русский |
-|---|---|---|---|---|
-| 01 | [Feature List](DOC/i18n/en/01-Feature-List.md) | [Funktionsübersicht](DOC/i18n/de/01-Funktionsuebersicht.md) | [Liste des fonctionnalités](DOC/i18n/fr/01-Liste-Fonctionnalites.md) | [Функциональный список](DOC/i18n/ru/01-Funkcionalnyj-spisok.md) |
-| 02 | [API Guide](DOC/i18n/en/02-API-Guide.md) | [API-Anleitung](DOC/i18n/de/02-API-Anleitung.md) | [Guide API](DOC/i18n/fr/02-Guide-API.md) | [Руководство по API](DOC/i18n/ru/02-Rukovodstvo-API.md) |
-| 03 | [Code Reading Guide](DOC/i18n/en/03-Code-Reading-Guide.md) | [Code-Leseanleitung](DOC/i18n/de/03-Code-Leseanleitung.md) | [Guide de lecture du code](DOC/i18n/fr/03-Guide-Lecture.md) | [Руководство по чтению кода](DOC/i18n/ru/03-Rukovodstvo-po-chteniyu.md) |
-| 04 | [Architecture](DOC/i18n/en/04-Architecture.md) | [Architektur](DOC/i18n/de/04-Architektur.md) | [Architecture](DOC/i18n/fr/04-Architecture.md) | [Архитектура](DOC/i18n/ru/04-Arhitektura.md) |
-| 05 | [Build & Deploy](DOC/i18n/en/05-Build-Deploy.md) | [Build & Bereitstellung](DOC/i18n/de/05-Build-Bereitstellung.md) | [Build & Déploiement](DOC/i18n/fr/05-Build-Deploiement.md) | [Сборка и развёртывание](DOC/i18n/ru/05-Sborka-i-razvertyvanie.md) |
-| 06 | [Test Document](DOC/i18n/en/06-Test-Document.md) | [Testdokument](DOC/i18n/de/06-Testdokument.md) | [Document de test](DOC/i18n/fr/06-Document-Test.md) | [Тестовая документация](DOC/i18n/ru/06-Testovaya-dokumentaciya.md) |
+> 🌐 以上文档的多语言翻译见顶部「多语言 / Translations」表。
 
 ## 🔐 契约与协作
 

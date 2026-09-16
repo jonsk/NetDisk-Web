@@ -1,0 +1,132 @@
+# NetDisk Web · Веб-фронтенд
+
+> Фронтенд консоли администрирования корпоративного диска **NetDisk**. Vue 3 + TypeScript + pnpm workspace,
+> разделяющий одну модель API с сервером и десктопом через OpenAPI-контракт.
+
+NetDisk — корпоративная система диска: этот репозиторий — его **веб-фронтенд (консоль администрирования)**, предоставляющий
+ИТ-администраторам управление пользователями/отделами, пространствами и квотами. Просмотр и передача файлов выполняются в десктоп-клиенте;
+этот репозиторий **намеренно не реализует онлайн-просмотр и передачу файлов** — это граница продукта, а не незавершённая функция.
+
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](../../../LICENSE)
+
+---
+
+## 🌐 Мультиязычность / Переводы
+
+| Язык | README | Список возможностей | Руководство API | Руководство по чтению кода | Архитектура | Сборка и развёртывание | Тест |
+|---|---|---|---|---|---|---|---|
+| English | [README](../en/README.md) | [Feature List](../en/01-Feature-List.md) | [API Guide](../en/02-API-Guide.md) | [Code Reading Guide](../en/03-Code-Reading-Guide.md) | [Architecture](../en/04-Architecture.md) | [Build & Deploy](../en/05-Build-Deploy.md) | [Test](../en/06-Test-Document.md) |
+| Deutsch | [README](../de/README.md) | [Funktionsübersicht](../de/01-Funktionsuebersicht.md) | [API-Anleitung](../de/02-API-Anleitung.md) | [Code-Leseanleitung](../de/03-Code-Leseanleitung.md) | [Architektur](../de/04-Architektur.md) | [Build & Bereitstellung](../de/05-Build-Bereitstellung.md) | [Testdokument](../de/06-Testdokument.md) |
+| Français | [README](../fr/README.md) | [Liste des fonctionnalités](../fr/01-Liste-Fonctionnalites.md) | [Guide API](../fr/02-Guide-API.md) | [Guide de lecture du code](../fr/03-Guide-Lecture.md) | [Architecture](../fr/04-Architecture.md) | [Build & Déploiement](../fr/05-Build-Deploiement.md) | [Document de test](../fr/06-Document-Test.md) |
+| Suomi | [README](../fi/README.md) | [Ominaisuusluettelo](../fi/01-Ominaisuusluettelo.md) | [API-opas](../fi/02-API-opas.md) | [Koodin lukemisen opas](../fi/03-Koodin-lukemisen-opas.md) | [Arkkitehtuuri](../fi/04-Arkkitehtuuri.md) | [Rakennus ja käyttöönotto](../fi/05-Rakennus-ja-kayttoonotto.md) | [Testidokumentti](../fi/06-Testidokumentti.md) |
+| Русский | [README](README.md) | [Список возможностей](01-Funkcionalnyj-spisok.md) | [Руководство API](02-Rukovodstvo-API.md) | [Руководство по чтению кода](03-Rukovodstvo-po-chteniyu.md) | [Архитектура](04-Arhitektura.md) | [Сборка и развёртывание](05-Sborka-i-razvertyvanie.md) | [Тестовая документация](06-Testovaya-dokumentaciya.md) |
+
+---
+
+## ✨ Возможности
+
+- **Консоль администрирования (`apps/admin`)** — только админка: вход / обзор / пользователи и отделы / управление пространствами,
+  построена на [Naive UI](https://www.naiveui.com).
+- **Единый источник контракта** — все модели API, общие между фронтендом и бэкендом, генерируются из `DOC/api/openapi.yaml`;
+  двусторонний diff-гейт гарантирует, что сгенерированные артефакты никогда не отстают от контракта.
+- **Единый API-клиент (`packages/api`)** — типизированный REST-клиент со встроенными структурированными ошибками,
+  внедрением токена и тихим обновлением при 401; **рукописный fetch запрещён статическим гейтом**, все запросы сходятся сюда.
+- **Инженерные гейты (`scripts/`)** — согласованность контракта и фронтенд-дисциплина (аудитория по веткам / хранение токена / охранники /
+  тихое обновление, 7 правил) — статические проверки без зависимостей, выполняемые прямо в CI.
+- **Встраиваемое развёртывание** — артефакты копируются в сервер после `pnpm build` и раздаются через Go `embed`, тот же источник и один порт.
+
+## 🧰 Технологический стек
+
+| Область | Выбор |
+|---|---|
+| Фреймворк | Vue 3 (Composition API / `<script setup>`) |
+| Сборка | Vite 5 |
+| Состояние | Pinia |
+| UI | Naive UI |
+| Роутинг | Vue Router 4 (режим History, подпуть `/admin/`) |
+| Типы | TypeScript (strict), vue-tsc |
+| Пакетный менеджер | pnpm (workspace, ≥9.15.9) |
+| Контракт | openapi-typescript (OpenAPI 3.1) |
+
+## 📦 Быстрый старт
+
+Требования: Node ≥ 20, pnpm ≥ 9.15.9.
+
+```bash
+# Установка зависимостей (точные версии из lockfile)
+pnpm install --frozen-lockfile
+
+# Разработка (Vite dev-сервер, /api проксируется на http://127.0.0.1:8080)
+pnpm dev:admin
+
+# Продакшн-сборка (вывод в apps/admin/dist, для копирования сервером в embed)
+pnpm build
+
+# Проверка типов / гейт контракта / дисциплина фронтенда
+pnpm -r typecheck
+pnpm check:api
+pnpm check:rules
+```
+
+## 🔁 Частые команды
+
+```bash
+pnpm dev:admin     # запустить dev-сервер админки (порт 5174)
+pnpm build         # собрать консоль администрирования
+pnpm typecheck     # проверка типов всего репозитория
+pnpm lint          # lint всего репозитория
+pnpm gen:api       # перегенерировать TS-типы из openapi.yaml
+pnpm gen:csharp    # (опционально) сгенерировать C#-модели десктопа из контракта
+pnpm check:api     # гейт согласованности артефакта контракта (двусторонний diff)
+pnpm lint:contract # lint контракта: запрет рукописного fetch / одноимённого DTO
+pnpm check:rules   # статическая проверка дисциплины фронтенда (7 правил)
+```
+
+## 📁 Структура репозитория
+
+```
+.
+├─ apps/admin/          # консоль администрирования (вход/обзор/пользователи-отделы/управление пространствами)
+│  └─ src/
+│     ├─ layouts/       #   AdminLayout: сайдбар + верхняя панель
+│     ├─ router/        #   маршруты и охранники
+│     ├─ stores/        #   состояние Pinia (auth store)
+│     └─ views/         #   представления страниц
+├─ packages/api/        # базовая библиотека из контракта (типы + REST-клиент + модель ошибок)
+├─ scripts/             # скрипты инженерных гейтов
+├─ DOC/                 # документация проекта + OpenAPI-контракт (DOC/api/openapi.yaml)
+```
+
+## 📚 Документация
+
+| № | Документ | Описание |
+|---|---|---|
+| 01 | [DOC/01-功能清单.md](../../../DOC/01-功能清单.md) | список возможностей по модулям |
+| 02 | [DOC/02-API指南.md](../../../DOC/02-API指南.md) | руководство по контракту и API-клиенту |
+| 03 | [DOC/03-代码阅读指南.md](../../../DOC/03-代码阅读指南.md) | обзор каталогов и организация кода |
+| 04 | [DOC/04-架构设计文档.md](../../../DOC/04-架构设计文档.md) | архитектурные решения и дизайн |
+| 05 | [DOC/05-编译与部署.md](../../../DOC/05-编译与部署.md) | сборка, встраивание артефакта и развёртывание |
+| 06 | [DOC/06-测试文档.md](../../../DOC/06-测试文档.md) | стратегия тестирования и гейты |
+
+> 🌐 Мультиязычные переводы указанных документов см. в таблице «Мультиязычность / Переводы» вверху.
+
+## 🔐 Контракт и взаимодействие
+
+Единственный источник истины интерфейсного контракта — `Doc/api/openapi.yaml` в серверном репозитории; этот репозиторий хранит
+vendored-копию в `DOC/api/openapi.yaml` (три места должны быть синхронизированы: сервер / web / desktop).
+Любое изменение интерфейса должно:
+1. изменить основной контракт;
+2. выполнить `pnpm gen:api` для перегенерации типов;
+3. пройти двусторонний diff-гейт `pnpm check:api`.
+
+Никогда не редактируйте артефакт `packages/api/src/schema.gen.ts` вручную.
+
+## 🚀 CI
+
+`.github/workflows/ci.yml` выполняется при push/PR в `master`/`main`:
+`pnpm install --frozen-lockfile → check:api → typecheck → check:rules → build →`
+проверяет существование `apps/admin/dist/index.html` (гарантируя, что артефакт можно встроить через embed).
+
+## 📄 Лицензия
+
+[Apache License 2.0](../../../LICENSE) · Copyright © 2026 NetDisk Contributors
