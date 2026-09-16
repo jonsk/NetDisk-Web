@@ -109,7 +109,7 @@ if (generated) {
 // ---- ③ 生成物是否与契约一致 ----
 if (process.argv.includes("--check-generated") && generated) {
   try {
-    const spec = path.join(repoRoot, "docs", "api", "openapi.yaml");
+    const spec = path.join(repoRoot, "DOC", "api", "openapi.yaml");
     // 直接用 node 跑生成器的 CLI 入口,而不是 `pnpm exec openapi-typescript`:
     // Windows 上 execFile 调 `.cmd` 会 EINVAL(Node 18+ 的安全行为,必须 shell:true),
     // 而 shell:true 会把参数交给 cmd 解析(路径含空格/中文时又是另一类坑)。
@@ -124,7 +124,7 @@ if (process.argv.includes("--check-generated") && generated) {
     const norm = (s) => s.replace(/\r\n/g, "\n").trimEnd();
     if (norm(fresh) !== norm(generated)) {
       problems.push(
-        "schema.gen.ts 与 docs/api/openapi.yaml 不一致 —— 契约改了要重新生成:" +
+        "schema.gen.ts 与 DOC/api/openapi.yaml 不一致 —— 契约改了要重新生成:" +
           "pnpm gen:api(禁止手改生成物)",
       );
     }

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "REST 契约的类型化客户端(唯一来源:docs/api/openapi.yaml,由 FE-W-02 生成)",
+  "description": "REST 契约的类型化客户端(唯一来源:DOC/api/openapi.yaml,由 FE-W-02 生成)",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {

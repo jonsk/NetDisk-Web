@@ -13,7 +13,7 @@
     "dev:admin": "pnpm --filter @netdisk/admin dev",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint",
-    "gen:api": "openapi-typescript docs/api/openapi.yaml -o packages/api/src/schema.gen.ts",
+    "gen:api": "openapi-typescript DOC/api/openapi.yaml -o packages/api/src/schema.gen.ts",
     "gen:csharp": "node scripts/gen-csharp.mjs",
     "check:api": "node scripts/lint-contract.mjs --check-generated",
     "lint:contract": "node scripts/lint-contract.mjs",

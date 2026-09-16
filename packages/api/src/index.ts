@@ -18,7 +18,7 @@
  */
 
 /**
- * 类型**全部来自契约**(FE-W-02):`docs/api/openapi.yaml` → `pnpm gen:api` → schema.gen.ts。
+ * 类型**全部来自契约**(FE-W-02):`DOC/api/openapi.yaml` → `pnpm gen:api` → schema.gen.ts。
  *
  * 纪律:本文件**不再手写任何与契约同名的类型** —— 手写副本在契约变更时不会跟着变,
  * 而两端对同一字段的两种理解只会在线上才暴露(例如服务端把 `freed_bytes` 改名,
