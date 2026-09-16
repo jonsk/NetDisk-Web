@@ -1,0 +1,42 @@
+# web (netdisk 前端) — 前端独立 CI
+#
+# 从原 monorepo 的 web 流水线拆分而来。本仓自含契约(web/docs/api/openapi.yaml),
+# check:api 对生成物 schema.gen.ts 做双向 diff;gen-csharp(桌面端模型生成)
+# 已随拆分归属 desktop 仓,不再在本仓门禁。
+name: ci
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: 契约门禁(生成物与契约一致 + 手写 fetch/DTO lint)
+        run: pnpm check:api
+      - run: pnpm -r typecheck
+      - name: 前端纪律静态检查(check:rules)
+        run: pnpm check:rules
+      - run: pnpm build
+      - name: 前端产物必须能被 embed(ADR-4)
+        run: |
+          test -f apps/admin/dist/index.html || (echo "admin 产物缺失" && exit 1)

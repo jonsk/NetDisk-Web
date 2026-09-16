@@ -1,0 +1,27 @@
+{
+  "name": "@netdisk/admin",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "管理后台(用户/部门/空间):仅管理功能,不提供文件浏览(2.3 渠道定位)",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@netdisk/api": "workspace:*",
+    "naive-ui": "^2.40.1",
+    "pinia": "^2.2.6",
+    "vue": "^3.5.13",
+    "vue-router": "^4.4.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vue-tsc": "^2.1.10",
+    "@types/node": "^22.10.1"
+  }
+}

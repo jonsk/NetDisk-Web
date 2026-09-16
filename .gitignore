@@ -1,0 +1,23 @@
+# web (netdisk frontend) .gitignore
+
+# ---- 依赖 ----
+node_modules/
+.pnpm-store/
+
+# ---- 构建产物 ----
+dist/
+.vite/
+*.tsbuildinfo
+apps/*/dist/
+packages/*/dist/
+
+# ---- 本地临时 ----
+*.log
+.tmp/
+
+# ---- IDE / OS ----
+.idea/
+.vscode/
+*.user
+.DS_Store
+Thumbs.db

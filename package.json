@@ -1,0 +1,28 @@
+{
+  "name": "netdisk-web",
+  "private": true,
+  "version": "0.0.0",
+  "description": "网盘前端工作区:管理后台(admin)",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm --filter @netdisk/admin build",
+    "build:admin": "pnpm --filter @netdisk/admin build",
+    "dev:admin": "pnpm --filter @netdisk/admin dev",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "gen:api": "openapi-typescript docs/api/openapi.yaml -o packages/api/src/schema.gen.ts",
+    "gen:csharp": "node scripts/gen-csharp.mjs",
+    "check:api": "node scripts/lint-contract.mjs --check-generated",
+    "lint:contract": "node scripts/lint-contract.mjs",
+    "check:rules": "node scripts/check-frontend-rules.mjs"
+  },
+  "devDependencies": {
+    "js-yaml": "^4.1.0",
+    "typescript": "^5.6.3",
+    "vue-tsc": "^2.1.10",
+    "openapi-typescript": "^7.4.4"
+  }
+}
