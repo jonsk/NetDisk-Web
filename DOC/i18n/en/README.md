@@ -13,13 +13,8 @@ this repository **deliberately does not implement online preview or file transfe
 
 ## 🌐 Multi-language / Translations
 
-| Language | README | Feature List | API Guide | Code Reading Guide | Architecture | Build & Deploy | Test |
-|---|---|---|---|---|---|---|---|
-| English | [README](README.md) | [Feature List](01-Feature-List.md) | [API Guide](02-API-Guide.md) | [Code Reading Guide](03-Code-Reading-Guide.md) | [Architecture](04-Architecture.md) | [Build & Deploy](05-Build-Deploy.md) | [Test](06-Test-Document.md) |
-| Deutsch | [README](../de/README.md) | [Funktionsübersicht](../de/01-Funktionsuebersicht.md) | [API-Anleitung](../de/02-API-Anleitung.md) | [Code-Leseanleitung](../de/03-Code-Leseanleitung.md) | [Architektur](../de/04-Architektur.md) | [Build & Bereitstellung](../de/05-Build-Bereitstellung.md) | [Testdokument](../de/06-Testdokument.md) |
-| Français | [README](../fr/README.md) | [Liste des fonctionnalités](../fr/01-Liste-Fonctionnalites.md) | [Guide API](../fr/02-Guide-API.md) | [Guide de lecture du code](../fr/03-Guide-Lecture.md) | [Architecture](../fr/04-Architecture.md) | [Build & Déploiement](../fr/05-Build-Deploiement.md) | [Document de test](../fr/06-Document-Test.md) |
-| Suomi | [README](../fi/README.md) | [Ominaisuusluettelo](../fi/01-Ominaisuusluettelo.md) | [API-opas](../fi/02-API-opas.md) | [Koodin lukemisen opas](../fi/03-Koodin-lukemisen-opas.md) | [Arkkitehtuuri](../fi/04-Arkkitehtuuri.md) | [Rakennus ja käyttöönotto](../fi/05-Rakennus-ja-kayttoonotto.md) | [Testidokumentti](../fi/06-Testidokumentti.md) |
-| Русский | [README](../ru/README.md) | [Список возможностей](../ru/01-Funkcionalnyj-spisok.md) | [Руководство API](../ru/02-Rukovodstvo-API.md) | [Руководство по чтению кода](../ru/03-Rukovodstvo-po-chteniyu.md) | [Архитектура](../ru/04-Arhitektura.md) | [Сборка и развёртывание](../ru/05-Sborka-i-razvertyvanie.md) | [Тестовая документация](../ru/06-Testovaya-dokumentaciya.md) |
+[中文](../../../README.md) | [English](../en/README.md) | [Deutsch](../de/README.md) | [Français](../fr/README.md) | [Suomi](../fi/README.md) | [Русский](../ru/README.md)
+
 
 ---
 
