@@ -6,9 +6,11 @@
  * 而假数据会让人误以为监控/统计已经做好了(后来排查时才发现是硬编码)。
  */
 import { onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { useAuthStore } from "../stores/auth";
 
 const auth = useAuthStore();
+const { t } = useI18n();
 const me = ref<Record<string, unknown> | null>(null);
 const error = ref("");
 
@@ -22,13 +24,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <n-card title="当前会话">
+  <n-card :title="t('overview.title')">
     <n-alert v-if="error" type="error" :show-icon="false">{{ error }}</n-alert>
     <n-descriptions v-else :column="1" label-placement="left">
-      <n-descriptions-item label="用户">{{ me?.username ?? "-" }}</n-descriptions-item>
-      <n-descriptions-item label="角色">{{ me?.role ?? "-" }}</n-descriptions-item>
-      <n-descriptions-item label="令牌受众">{{ me?.audience ?? "-" }}</n-descriptions-item>
-      <n-descriptions-item label="request_id">{{ me?.request_id ?? "-" }}</n-descriptions-item>
+      <n-descriptions-item :label="t('overview.user')">{{ me?.username ?? "-" }}</n-descriptions-item>
+      <n-descriptions-item :label="t('overview.role')">{{ me?.role ?? "-" }}</n-descriptions-item>
+      <n-descriptions-item :label="t('overview.audience')">{{ me?.audience ?? "-" }}</n-descriptions-item>
+      <n-descriptions-item :label="t('overview.requestId')">{{ me?.request_id ?? "-" }}</n-descriptions-item>
     </n-descriptions>
   </n-card>
 </template>

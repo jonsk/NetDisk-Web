@@ -8,14 +8,17 @@
  */
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useMessage } from "naive-ui";
 import { APIError } from "@netdisk/api";
 import { useAuthStore } from "../stores/auth";
+import LanguageSwitcher from "../components/LanguageSwitcher.vue";
 
 const router = useRouter();
 const route = useRoute();
 const message = useMessage();
 const auth = useAuthStore();
+const { t } = useI18n();
 
 const login = ref("");
 const password = ref("");
@@ -23,7 +26,7 @@ const loading = ref(false);
 
 async function onSubmit() {
   if (!login.value || !password.value) {
-    message.warning("请输入用户名与密码");
+    message.warning(t("login.empty"));
     return;
   }
   loading.value = true;
@@ -34,9 +37,9 @@ async function onSubmit() {
   } catch (e) {
     if (e instanceof APIError) {
       // 429 单独提示:用户需要知道"等一下再试"而不是"密码错了"
-      message.error(e.status === 429 ? "尝试过于频繁,请稍后再试" : e.message);
+      message.error(e.status === 429 ? t("login.rateLimited") : e.message);
     } else {
-      message.error("登录失败,请稍后再试");
+      message.error(t("login.failed"));
     }
   } finally {
     loading.value = false;
@@ -46,21 +49,24 @@ async function onSubmit() {
 
 <template>
   <div class="login-wrap">
-    <n-card class="login-card" title="网盘管理后台">
+    <div class="lang-corner">
+      <LanguageSwitcher />
+    </div>
+    <n-card class="login-card" :title="t('app.name')">
       <n-form @submit.prevent="onSubmit">
-        <n-form-item label="用户名 / 邮箱">
-          <n-input v-model:value="login" placeholder="请输入用户名或邮箱" />
+        <n-form-item :label="t('login.username')">
+          <n-input v-model:value="login" :placeholder="t('login.usernamePlaceholder')" />
         </n-form-item>
-        <n-form-item label="密码">
+        <n-form-item :label="t('login.password')">
           <n-input
             v-model:value="password"
             type="password"
             show-password-on="click"
-            placeholder="请输入密码"
+            :placeholder="t('login.passwordPlaceholder')"
             @keyup.enter="onSubmit"
           />
         </n-form-item>
-        <n-button type="primary" block :loading="loading" @click="onSubmit">登录</n-button>
+        <n-button type="primary" block :loading="loading" @click="onSubmit">{{ t("login.submit") }}</n-button>
       </n-form>
     </n-card>
   </div>
@@ -68,11 +74,17 @@ async function onSubmit() {
 
 <style scoped>
 .login-wrap {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   background: #f5f7fa;
+}
+.lang-corner {
+  position: absolute;
+  top: 16px;
+  right: 16px;
 }
 .login-card {
   width: 380px;

@@ -1,0 +1,156 @@
+/**
+ * English language pack.
+ *
+ * Satisfies `LocaleSchema` (imported from zh-CN) so a missing/extra key is a
+ * compile-time error — the translation set can never silently drift.
+ */
+import type { LocaleSchema } from "./zh-CN";
+
+const enUS: LocaleSchema = {
+  app: { name: "NetDisk Admin" },
+  common: {
+    cancel: "Cancel",
+    create: "Create",
+    save: "Save",
+    search: "Search",
+    query: "Query",
+    action: "Actions",
+    status: "Status",
+    dash: "—",
+  },
+  login: {
+    username: "Username / Email",
+    password: "Password",
+    usernamePlaceholder: "Enter username or email",
+    passwordPlaceholder: "Enter password",
+    submit: "Sign in",
+    empty: "Please enter username and password",
+    rateLimited: "Too many attempts, please try again later",
+    failed: "Sign-in failed, please try again later",
+  },
+  layout: {
+    brand: "NetDisk Admin",
+    logout: "Sign out",
+    menu: {
+      overview: "Overview",
+      users: "Users & Departments",
+      spaces: "Spaces",
+    },
+  },
+  routes: {
+    login: "Sign in",
+    overview: "Overview",
+    users: "Users & Departments",
+    spaces: "Spaces",
+  },
+  overview: {
+    title: "Current Session",
+    user: "User",
+    role: "Role",
+    audience: "Token audience",
+    requestId: "request_id",
+  },
+  users: {
+    title: "Users",
+    searchPlaceholder: "Search username / display name / email",
+    newUser: "New user",
+    roleFilterPlaceholder: "Role",
+    statusFilterPlaceholder: "Status",
+    roles: {
+      user: "Regular user",
+      dept_admin: "Department admin",
+      super_admin: "Super admin",
+    },
+    statuses: {
+      active: "Enabled",
+      disabled: "Disabled",
+      pending: "Pending activation",
+    },
+    colUsername: "Username",
+    colDisplayName: "Display name",
+    colEmail: "Email",
+    colRole: "Role",
+    colStatus: "Status",
+    colLastLogin: "Last login",
+    colActions: "Actions",
+    enable: "Enable",
+    disable: "Disable",
+    enabled: "Enabled",
+    disabled: "Disabled",
+    roleUpdated: "Role updated",
+    created: "Account created",
+    confirmDisable:
+      "Disable 「{name}」?\n\nOnce disabled: this account cannot sign in, and existing sessions become invalid after the token expires (the refresh token is revoked immediately).",
+    deptTitle: "Departments",
+    deptNamePlaceholder: "New department name",
+    newDept: "New department",
+    noDept: "No departments yet (created via org sync)",
+    selectDeptPlaceholder: "Select a department to delete (empty depts only)",
+    deleteDept: "Delete department",
+    confirmDeleteDept: "Delete department 「{name}」? (only empty departments can be deleted)",
+    deptCreated: "Department created",
+    deleted: "Deleted",
+    form: {
+      username: "Username",
+      email: "Email",
+      displayName: "Display name",
+      role: "Role",
+      usernamePlaceholder: "Login name, must be unique",
+      emailPlaceholder: "Optional, unique if set",
+      displayNamePlaceholder: "Defaults to username",
+    },
+  },
+  spaces: {
+    title: "Spaces",
+    alertInfo:
+      "This page only performs governance (quota / warning threshold / freeze / revoke). Creating spaces, inviting members and leaving spaces are collaboration features, available in the desktop client.\nUsage is read-only: it only changes via upload/delete transactions and is never edited manually here.",
+    searchPlaceholder: "Search space name / owner",
+    kindFilterPlaceholder: "Type",
+    statusFilterPlaceholder: "Status",
+    kinds: {
+      personal: "Personal space",
+      team: "Team space",
+    },
+    statuses: {
+      frozen: "Frozen",
+      normal: "Normal",
+    },
+    colSpace: "Space",
+    colKind: "Type",
+    colOwner: "Owner",
+    colUsageQuota: "Usage / Quota",
+    colUsed: "Used",
+    colQuota: "Quota",
+    colWarn: "Warn at",
+    colMembers: "Members",
+    colFiles: "Files",
+    colStatus: "Status",
+    colActions: "Actions",
+    quota: "Quota",
+    freeze: "Freeze",
+    unfreeze: "Unfreeze",
+    revoke: "Revoke",
+    query: "Query",
+    unlimited: "Unlimited",
+    confirmFreeze: "Freeze 「{name}」?\n\nOnce frozen, all write operations in this space are rejected (reads still work).",
+    confirmUnfreeze: "Unfreeze 「{name}」?",
+    confirmRevoke:
+      "Revoke 「{name}」?\n\nAfter revocation: the space is frozen and **all members are removed** (only the owner remains).\nFiles in the space are **not deleted** — confirm a retention policy separately if deletion is needed.",
+    saved: "Quota and warning threshold updated",
+    frozen: "Frozen",
+    unfrozen: "Unfrozen",
+    revoked: "Revoked: {count} member(s) removed; files not deleted",
+    quotaTitle: "Quota & warning threshold",
+    form: {
+      space: "Space",
+      used: "Used",
+      quotaGb: "Quota (GB)",
+      warnPercent: "Warning threshold (%)",
+      suffixUnlimited: "0 means unlimited",
+    },
+    alertWarn:
+      "The warning threshold is a \"reminder line\" (notify when reached), not an upload cap — the upload cap is controlled by the server-side 95% policy.",
+  },
+};
+
+export default enUS;

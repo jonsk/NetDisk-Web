@@ -17,9 +17,12 @@
  *    这里设的是多少百分比开始提醒(不同空间可以不同)。
  * 3. **用量不可手改**:界面只读 `used_bytes`;它只由上传/删除事务增减。
  *    给个输入框让它"可编辑"会让人以为可以手工修正配额用量。
+ *
+ * 国际化:筛选下拉与表格列用 `computed` 包裹(内调 `t()`),切换语言即刷新。
  */
 import { computed, h, onMounted, ref } from "vue";
 import { NButton, NProgress, NTag, useMessage, type DataTableColumns } from "naive-ui";
+import { useI18n } from "vue-i18n";
 import { useAuthStore } from "../stores/auth";
 
 interface AdminSpace {
@@ -39,6 +42,7 @@ interface AdminSpace {
 
 const auth = useAuthStore();
 const message = useMessage();
+const { t } = useI18n();
 
 const spaces = ref<AdminSpace[]>([]);
 const total = ref(0);
@@ -56,7 +60,7 @@ const quotaForm = ref({ quota_gb: 0, warn_percent: 80 });
 const saving = ref(false);
 
 function fmtBytes(v: number): string {
-  if (!v) return "不限";
+  if (!v) return t("spaces.unlimited");
   const units = ["B", "KB", "MB", "GB", "TB"];
   let n = v;
   let i = 0;
@@ -109,7 +113,7 @@ async function saveQuota() {
         warn_percent: quotaForm.value.warn_percent,
       },
     });
-    message.success("配额与预警阈值已更新");
+    message.success(t("spaces.saved"));
     showQuota.value = false;
     await load();
   } catch (e) {
@@ -121,15 +125,15 @@ async function saveQuota() {
 
 async function setFrozen(sp: AdminSpace, frozen: boolean) {
   const text = frozen
-    ? `确认冻结「${sp.name}」?\n\n冻结后该空间内所有写操作被拒(读仍可用)。`
-    : `确认解冻「${sp.name}」?`;
+    ? t("spaces.confirmFreeze", { name: sp.name })
+    : t("spaces.confirmUnfreeze", { name: sp.name });
   if (!window.confirm(text)) return;
   try {
     await auth.client().request(`/api/v1/admin/spaces/${sp.id}/freeze`, {
       method: "POST",
       body: { frozen },
     });
-    message.success(frozen ? "已冻结" : "已解冻");
+    message.success(frozen ? t("spaces.frozen") : t("spaces.unfrozen"));
     await load();
   } catch (e) {
     message.error(e instanceof Error ? e.message : String(e));
@@ -137,11 +141,7 @@ async function setFrozen(sp: AdminSpace, frozen: boolean) {
 }
 
 async function revoke(sp: AdminSpace) {
-  const ok = window.confirm(
-    `确认收回「${sp.name}」?\n\n` +
-      "收回后:空间被冻结,且**全部成员被移出**(仅所有者保留)。\n" +
-      "空间内的文件**不会被删除** —— 需要删除请另行确认保留策略。",
-  );
+  const ok = window.confirm(t("spaces.confirmRevoke", { name: sp.name }));
   if (!ok) return;
   try {
     const res = await auth
@@ -149,19 +149,28 @@ async function revoke(sp: AdminSpace) {
       .request<{ members_removed: number; note: string }>(`/api/v1/admin/spaces/${sp.id}/revoke`, {
         method: "POST",
       });
-    message.success(`已收回:移出 ${res.members_removed} 名成员;文件未删除`);
+    message.success(t("spaces.revoked", { count: res.members_removed }));
     await load();
   } catch (e) {
     message.error(e instanceof Error ? e.message : String(e));
   }
 }
 
+const kindOptions = computed(() => [
+  { label: t("spaces.kinds.personal"), value: "personal" },
+  { label: t("spaces.kinds.team"), value: "team" },
+]);
+const frozenOptions = computed(() => [
+  { label: t("spaces.statuses.frozen"), value: "true" },
+  { label: t("spaces.statuses.normal"), value: "false" },
+]);
+
 const columns = computed<DataTableColumns<AdminSpace>>(() => [
-  { title: "空间", key: "name", ellipsis: { tooltip: true } },
-  { title: "类型", key: "kind", width: 90 },
-  { title: "所有者", key: "owner_username", width: 160 },
+  { title: t("spaces.colSpace"), key: "name", ellipsis: { tooltip: true } },
+  { title: t("spaces.colKind"), key: "kind", width: 90 },
+  { title: t("spaces.colOwner"), key: "owner_username", width: 160 },
   {
-    title: "用量 / 配额",
+    title: t("spaces.colUsageQuota"),
     key: "used",
     width: 240,
     render: (row) =>
@@ -173,33 +182,33 @@ const columns = computed<DataTableColumns<AdminSpace>>(() => [
             height: 10,
             status: row.used_percent >= 95 ? "error" : row.used_percent >= row.warn_percent ? "warning" : "success",
           })
-        : h("span", null, `${fmtBytes(row.used_bytes)} / 不限`),
+        : h("span", null, `${fmtBytes(row.used_bytes)} / ${t("spaces.unlimited")}`),
   },
-  { title: "已用", key: "used_bytes", width: 110, render: (row) => fmtBytes(row.used_bytes) },
-  { title: "配额", key: "quota_bytes", width: 110, render: (row) => fmtBytes(row.quota_bytes) },
-  { title: "预警线", key: "warn_percent", width: 90, render: (row) => `${row.warn_percent}%` },
-  { title: "成员", key: "member_count", width: 80 },
-  { title: "文件", key: "files_count", width: 80 },
+  { title: t("spaces.colUsed"), key: "used_bytes", width: 110, render: (row) => fmtBytes(row.used_bytes) },
+  { title: t("spaces.colQuota"), key: "quota_bytes", width: 110, render: (row) => fmtBytes(row.quota_bytes) },
+  { title: t("spaces.colWarn"), key: "warn_percent", width: 90, render: (row) => `${row.warn_percent}%` },
+  { title: t("spaces.colMembers"), key: "member_count", width: 80 },
+  { title: t("spaces.colFiles"), key: "files_count", width: 80 },
   {
-    title: "状态",
+    title: t("spaces.colStatus"),
     key: "frozen",
     width: 100,
     render: (row) =>
       h(NTag, { size: "small", type: row.frozen ? "error" : "success" }, {
-        default: () => (row.frozen ? "已冻结" : "正常"),
+        default: () => (row.frozen ? t("spaces.statuses.frozen") : t("spaces.statuses.normal")),
       }),
   },
   {
-    title: "操作",
+    title: t("spaces.colActions"),
     key: "actions",
     width: 250,
     render: (row) =>
       h("div", { style: "display:flex;gap:6px;flex-wrap:wrap" }, [
-        h(NButton, { size: "tiny", onClick: () => openQuota(row) }, { default: () => "配额" }),
+        h(NButton, { size: "tiny", onClick: () => openQuota(row) }, { default: () => t("spaces.quota") }),
         row.frozen
-          ? h(NButton, { size: "tiny", type: "primary", onClick: () => void setFrozen(row, false) }, { default: () => "解冻" })
-          : h(NButton, { size: "tiny", type: "warning", onClick: () => void setFrozen(row, true) }, { default: () => "冻结" }),
-        h(NButton, { size: "tiny", type: "error", onClick: () => void revoke(row) }, { default: () => "收回" }),
+          ? h(NButton, { size: "tiny", type: "primary", onClick: () => void setFrozen(row, false) }, { default: () => t("spaces.unfreeze") })
+          : h(NButton, { size: "tiny", type: "warning", onClick: () => void setFrozen(row, true) }, { default: () => t("spaces.freeze") }),
+        h(NButton, { size: "tiny", type: "error", onClick: () => void revoke(row) }, { default: () => t("spaces.revoke") }),
       ]),
   },
 ]);
@@ -211,35 +220,34 @@ onMounted(() => void load());
   <div>
     <n-alert v-if="error" type="error" :show-icon="false" style="margin-bottom: 12px">{{ error }}</n-alert>
 
-    <n-card title="空间治理" size="small">
-      <n-alert type="info" :show-icon="false" style="margin-bottom: 12px">
-        本页只做全局治理(配额/预警阈值/冻结/收回)。新建空间、邀请成员、退出空间属协作管理,入口在桌面客户端。
-        用量为只读:它只由上传/删除事务增减,后台不手工修正。
+    <n-card :title="t('spaces.title')" size="small">
+      <n-alert type="info" :show-icon="false" style="white-space: pre-line; margin-bottom: 12px">
+        {{ t("spaces.alertInfo") }}
       </n-alert>
 
       <n-space align="center" style="margin-bottom: 12px">
         <n-input
           v-model:value="search"
-          placeholder="搜索空间名 / 所有者"
+          :placeholder="t('spaces.searchPlaceholder')"
           style="width: 260px"
           clearable
           @keyup.enter="load()"
         />
         <n-select
           v-model:value="kindFilter"
-          :options="[{ label: '个人空间', value: 'personal' }, { label: '团队空间', value: 'team' }]"
-          placeholder="类型"
+          :options="kindOptions"
+          :placeholder="t('spaces.kindFilterPlaceholder')"
           clearable
           style="width: 140px"
         />
         <n-select
           v-model:value="frozenFilter"
-          :options="[{ label: '已冻结', value: 'true' }, { label: '正常', value: 'false' }]"
-          placeholder="状态"
+          :options="frozenOptions"
+          :placeholder="t('spaces.statusFilterPlaceholder')"
           clearable
           style="width: 120px"
         />
-        <n-button type="primary" @click="load()">查询</n-button>
+        <n-button type="primary" @click="load()">{{ t("common.query") }}</n-button>
       </n-space>
 
       <n-data-table :columns="columns" :data="spaces" :loading="loading" size="small" :row-key="(r: AdminSpace) => r.id" />
@@ -248,30 +256,30 @@ onMounted(() => void load());
       </n-space>
     </n-card>
 
-    <n-modal v-model:show="showQuota" preset="card" title="配额与预警阈值" style="width: 460px">
+    <n-modal v-model:show="showQuota" preset="card" :title="t('spaces.quotaTitle')" style="width: 460px">
       <n-form label-placement="left" label-width="110">
-        <n-form-item label="空间">
+        <n-form-item :label="t('spaces.form.space')">
           <span>{{ quotaTarget?.name }}</span>
         </n-form-item>
-        <n-form-item label="已用">
+        <n-form-item :label="t('spaces.form.used')">
           <span>{{ fmtBytes(quotaTarget?.used_bytes ?? 0) }}</span>
         </n-form-item>
-        <n-form-item label="配额(GB)">
+        <n-form-item :label="t('spaces.form.quotaGb')">
           <n-input-number v-model:value="quotaForm.quota_gb" :min="0" :step="1" style="width: 100%">
-            <template #suffix>0 表示不限制</template>
+            <template #suffix>{{ t("spaces.form.suffixUnlimited") }}</template>
           </n-input-number>
         </n-form-item>
-        <n-form-item label="预警阈值(%)">
+        <n-form-item :label="t('spaces.form.warnPercent')">
           <n-input-number v-model:value="quotaForm.warn_percent" :min="1" :max="100" style="width: 100%" />
         </n-form-item>
-        <n-alert type="info" :show-icon="false">
-          预警阈值是"提醒线"(达到后通知),不是上传上限 —— 上传上限由服务端 95% 策略控制。
+        <n-alert type="info" :show-icon="false" style="white-space: pre-line">
+          {{ t("spaces.alertWarn") }}
         </n-alert>
       </n-form>
       <template #footer>
         <n-space justify="end">
-          <n-button @click="showQuota = false">取消</n-button>
-          <n-button type="primary" :loading="saving" @click="saveQuota">保存</n-button>
+          <n-button @click="showQuota = false">{{ t("common.cancel") }}</n-button>
+          <n-button type="primary" :loading="saving" @click="saveQuota">{{ t("common.save") }}</n-button>
         </n-space>
       </template>
     </n-modal>
