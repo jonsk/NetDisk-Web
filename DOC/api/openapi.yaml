@@ -809,6 +809,138 @@ paths:
       responses:
         "200": { description: OK }
 
+  /api/v1/admin/users:
+    get:
+      tags: [admin]
+      summary: 管理员列出用户
+      parameters:
+        - { name: search, in: query, required: false, schema: { type: string } }
+        - { name: role, in: query, required: false, schema: { type: string } }
+        - { name: status, in: query, required: false, schema: { type: string } }
+        - { name: limit, in: query, required: false, schema: { type: integer } }
+        - { name: offset, in: query, required: false, schema: { type: integer } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminUserListResult" }
+    post:
+      tags: [admin]
+      summary: 管理员创建用户(服务端生成凭据并建个人空间,不含密码)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminUserCreateRequest" }
+      responses:
+        "201":
+          description: 已创建
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminUserView" }
+        "400":
+          description: 非法参数(用户名为空/角色不合法)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "409":
+          description: 用户名或邮箱冲突
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/v1/admin/users/{id}:
+    patch:
+      tags: [admin]
+      summary: 管理员更新用户(角色/状态)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminUserUpdateRequest" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminUserView" }
+        "400":
+          description: 非法参数(角色/状态不合法或无修改字段)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "404":
+          description: 用户不存在
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/v1/admin/spaces:
+    get:
+      tags: [admin]
+      summary: 管理员列出全部空间
+      parameters:
+        - { name: search, in: query, required: false, schema: { type: string } }
+        - { name: kind, in: query, required: false, schema: { type: string } }
+        - { name: frozen, in: query, required: false, schema: { type: boolean } }
+        - { name: limit, in: query, required: false, schema: { type: integer } }
+        - { name: offset, in: query, required: false, schema: { type: integer } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminSpaceListResult" }
+
+  /api/v1/admin/spaces/{id}/quota:
+    patch:
+      tags: [admin]
+      summary: 管理员设置空间配额与预警阈值
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SpaceQuotaRequest" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SpaceQuotaResult" }
+        "400":
+          description: 非法参数(配额<0 / 预警越界 / 无修改字段)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "404":
+          description: 空间不存在
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/v1/admin/spaces/{id}/revoke:
+    post:
+      tags: [admin]
+      summary: 管理员收回空间(冻结并清空成员;文件不删)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SpaceRevokeResult" }
+        "404":
+          description: 空间不存在
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1252,6 +1384,102 @@ components:
         children:
           type: array
           items: { $ref: "#/components/schemas/DepartmentNode" }
+
+    # ---- 管理员治理:用户与空间(4.3 / FE-W-04 / FE-W-06)----
+
+    AdminUserView:
+      type: object
+      required: [id, username, display_name, role, status]
+      properties:
+        id: { type: string }
+        username: { type: string }
+        display_name: { type: string }
+        avatar_url: { type: string }
+        role: { type: string, description: super_admin / dept_admin / user }
+        status: { type: string, description: active / disabled / pending }
+        email: { type: string }
+        token_version: { type: integer, format: int64 }
+        created_at: { type: string }
+        updated_at: { type: string }
+        last_login_at: { type: string, nullable: true }
+
+    AdminUserListResult:
+      type: object
+      required: [users, total, limit, offset]
+      properties:
+        users:
+          type: array
+          items: { $ref: "#/components/schemas/AdminUserView" }
+        total: { type: integer }
+        limit: { type: integer }
+        offset: { type: integer }
+
+    AdminUserCreateRequest:
+      type: object
+      required: [username]
+      properties:
+        username: { type: string }
+        email: { type: string }
+        display_name: { type: string }
+        role: { type: string, description: super_admin / dept_admin / user;缺省 user }
+
+    AdminUserUpdateRequest:
+      type: object
+      properties:
+        role: { type: string, nullable: true, description: super_admin / dept_admin / user }
+        status: { type: string, nullable: true, description: active / disabled / pending }
+
+    AdminSpaceView:
+      type: object
+      required: [id, kind, name, owner_id, quota_bytes, used_bytes, frozen]
+      properties:
+        id: { type: string }
+        kind: { type: string, description: personal / team }
+        name: { type: string }
+        owner_id: { type: string }
+        owner_username: { type: string }
+        owner_display_name: { type: string }
+        quota_bytes: { type: integer, format: int64 }
+        used_bytes: { type: integer, format: int64 }
+        warn_percent: { type: integer }
+        used_percent: { type: number, format: double }
+        frozen: { type: boolean }
+        member_count: { type: integer }
+        files_count: { type: integer, format: int64 }
+        created_at: { type: string }
+
+    AdminSpaceListResult:
+      type: object
+      required: [spaces, total]
+      properties:
+        spaces:
+          type: array
+          items: { $ref: "#/components/schemas/AdminSpaceView" }
+        total: { type: integer }
+
+    SpaceQuotaRequest:
+      type: object
+      properties:
+        quota_bytes: { type: integer, format: int64, nullable: true, description: 字节;0=不限制;<0 拒绝 }
+        warn_percent: { type: integer, nullable: true, description: 1..100 }
+
+    SpaceQuotaResult:
+      type: object
+      required: [id, quota_bytes, used_bytes, warn_percent]
+      properties:
+        id: { type: string }
+        quota_bytes: { type: integer, format: int64 }
+        used_bytes: { type: integer, format: int64 }
+        warn_percent: { type: integer }
+
+    SpaceRevokeResult:
+      type: object
+      required: [id, frozen, members_removed]
+      properties:
+        id: { type: string }
+        frozen: { type: boolean }
+        members_removed: { type: integer }
+        note: { type: string, description: 已收回访问权(冻结并清空成员);空间内文件未删除 }
 
 security:
   - bearerAuth: []
