@@ -8,16 +8,20 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "pnpm --filter @netdisk/admin build",
+    "build": "pnpm --filter @netdisk/admin build && pnpm --filter @netdisk/landing build",
     "build:admin": "pnpm --filter @netdisk/admin build",
+    "build:landing": "pnpm --filter @netdisk/landing build",
     "dev:admin": "pnpm --filter @netdisk/admin dev",
+    "dev:landing": "pnpm --filter @netdisk/landing dev",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint",
     "gen:api": "openapi-typescript DOC/api/openapi.yaml -o packages/api/src/schema.gen.ts",
     "gen:csharp": "node scripts/gen-csharp.mjs",
     "check:api": "node scripts/lint-contract.mjs --check-generated",
     "lint:contract": "node scripts/lint-contract.mjs",
-    "check:rules": "node scripts/check-frontend-rules.mjs"
+    "check:rules": "node scripts/check-frontend-rules.mjs",
+    "copy-dist": "node scripts/copy-dist.mjs",
+    "build:all": "pnpm build && pnpm copy-dist"
   },
   "devDependencies": {
     "js-yaml": "^4.1.0",
