@@ -43,7 +43,7 @@ error but silently does the wrong thing":
 | Rule | Check | Consequence if broken |
 |---|---|---|
 | R1 | admin login passes `audience="web"` | login succeeds but all APIs 403 |
-| R2 | token only in sessionStorage (no localStorage) | management credentials linger on shared computers |
+| R2 | token/credentials only in sessionStorage (no localStorage; except i18n language preference) | management credentials linger on shared computers |
 | R3 | guard redirects to login preserving the original URL (redirect) | user is sent home after login, losing the original page |
 | R4 | 401 silent refresh and **replay once** (doFetch twice) | refresh without replay = request still fails |
 | R5 | entry `auth.restore()` before mounting router | bounced to login on every refresh |

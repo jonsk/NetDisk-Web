@@ -39,7 +39,7 @@ tehdään väärin":
 | Sääntö | Tarkistuskohta | Rikkomisen seuraus |
 |---|---|---|
 | R1 | Admin-kirjautuminen mukana `audience="web"` | Kirjautuminen onnistuu, mutta kaikki rajapinnat antavat 403 |
-| R2 | Token vain sessionStorage-muistissa (localStorage kielletty) | Jaetun koneen pitkäaikainen hallintatunnisteen tallennus |
+| R2 | Token/tunnistetiedot vain sessionStorage-muistissa (localStorage kielletty; paitsi i18n-kieliasetus) | Jaetun koneen pitkäaikainen hallintatunnisteen tallennus |
 | R3 | Vartija ei-kirjautuneena siirtyy kirjautumissivulle ja säilyttää alkuperäisen osoitteen (redirect) | Kirjautumisen jälkeen palautetaan etusivulle, alkuperäinen sivu menetetään |
 | R4 | 401:ssä hiljainen uudistus ja **toisto kerran** (doFetch kahdesti) | Pelkkä uudistus ilman toistoa = silti epäonnistuu |
 | R5 | Sisäänkäynnissä ensin `auth.restore()` sitten reittien kiinnitys | Jokainen päivitys heittää kirjautumissivulle |

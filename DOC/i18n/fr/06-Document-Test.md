@@ -46,7 +46,7 @@ signale pas d'erreur mais fait silencieusement la mauvaise chose » :
 | Règle | Vérification | Conséquence en cas de bris |
 |---|---|---|
 | R1 | La connexion admin passe `audience="web"` | la connexion réussit mais toutes les API renvoient 403 |
-| R2 | jeton uniquement en sessionStorage (pas de localStorage) | les identifiants d'administration s'attardent sur les ordinateurs partagés |
+| R2 | jeton/identifiants uniquement en sessionStorage (pas de localStorage; sauf préférence de langue i18n) | les identifiants d'administration s'attardent sur les ordinateurs partagés |
 | R3 | le garde redirige vers la connexion en préservant l'URL d'origine (redirect) | l'utilisateur est envoyé à l'accueil après connexion, perdant la page d'origine |
 | R4 | 401 actualisation silencieuse et **rejeu une fois** (doFetch deux fois) | actualiser sans rejouer = la requête échoue toujours |
 | R5 | entrée `auth.restore()` avant de monter le routeur | renvoyé à la connexion à chaque rafraîchissement |

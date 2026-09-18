@@ -14,8 +14,12 @@
  *
  *   R1 admin 登录必须 audience=web(R-14 分端)
  *      —— 写错的表现是"登录成功但所有接口 403",而错误信息只说"令牌无效"
- *   R2 管理后台令牌只存 sessionStorage(不得用 localStorage)
+ *   R2 管理后台**令牌/凭据**只存 sessionStorage,不得用 localStorage
  *      —— localStorage 在共用电脑上长期留存管理凭据
+ *      —— 豁免:i18n 语言偏好(`apps/admin/src/i18n/` 的 `netdisk.admin.locale`)
+ *         不是凭据,允许 localStorage(语言选择须跨标签页/跨会话记忆;
+ *         与"共用电脑不留管理凭据"是两回事)。豁免按文件路径收窄到 i18n 目录,
+ *         其余任何 localStorage(疑似凭据/敏感数据)仍判红。
  *   R3 路由守卫:未登录跳登录页,且**保留原地址**(redirect 查询参数)
  *      —— 不保留的话用户每次登录后都被送回首页,丢掉他本来要打开的页面
  *   R4 token 过期**静默刷新并重放一次**(客户端 send():401 → onUnauthorized → 重放)
@@ -108,16 +112,24 @@ check("R1 admin 登录带 audience=web", () => {
   }
 });
 
-// ---- R2:管理后台令牌只存 sessionStorage ----
+// ---- R2:管理后台令牌/凭据只存 sessionStorage ----
 check("R2 admin 令牌只存 sessionStorage(禁用 localStorage)", () => {
   const files = walk(path.join(webRoot, "apps/admin/src"));
   for (const f of files) {
     const text = stripComments(readFileSync(f, "utf8"));
-    if (/localStorage/.test(text)) {
-      problems.push(
-        `R2:${path.relative(webRoot, f)} 使用了 localStorage(管理后台令牌只允许 sessionStorage)`,
-      );
+    if (!/localStorage/.test(text)) {
+      continue;
     }
+    // 豁免:i18n 语言偏好不是管理凭据(见规则头部注释),允许 localStorage。
+    // 收窄到 i18n 目录,避免"按注释豁免"被误当成"按文件豁免"。
+    const rel = path.relative(webRoot, f);
+    if (rel.startsWith("apps" + path.sep + "admin" + path.sep + "src" + path.sep + "i18n")) {
+      continue;
+    }
+    problems.push(
+      `R2:${rel} 使用了 localStorage(管理后台令牌只允许 sessionStorage;` +
+        "i18n 语言偏好除外)",
+    );
   }
   const auth = stripComments(read("apps/admin/src/stores/auth.ts") ?? "");
   if (auth && !/sessionStorage/.test(auth)) {

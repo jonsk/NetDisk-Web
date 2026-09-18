@@ -45,7 +45,7 @@ Fehler, tut aber still das Falsche":
 | Regel | Prüfung | Folge bei Bruch |
 |---|---|---|
 | R1 | Admin-Login übergibt `audience="web"` | Login gelingt, aber alle APIs geben 403 |
-| R2 | Token nur in sessionStorage (kein localStorage) | Verwaltungs-Zugangsdaten bleiben auf gemeinsam genutzten Computern |
+| R2 | Token/Zugangsdaten nur in sessionStorage (kein localStorage; außer i18n-Sprachpräferenz) | Verwaltungs-Zugangsdaten bleiben auf gemeinsam genutzten Computern |
 | R3 | Guard leitet zur Login-Seite um und behält ursprüngliche URL (redirect) | Benutzer landet nach Login auf der Startseite, verliert die ursprüngliche Seite |
 | R4 | 401 stilles Aktualisieren und **einmal wiederholen** (doFetch zweimal) | Aktualisieren ohne Wiederholen = Anfrage schlägt weiterhin fehl |
 | R5 | Einstieg `auth.restore()` vor dem Mounten des Routers | bei jedem Aktualisieren zur Login-Seite |
