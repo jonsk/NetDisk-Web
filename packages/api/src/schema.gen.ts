@@ -1826,6 +1826,299 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 管理员列出用户 */
+        get: {
+            parameters: {
+                query?: {
+                    search?: string;
+                    role?: string;
+                    status?: string;
+                    limit?: number;
+                    offset?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AdminUserListResult"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** 管理员创建用户(服务端生成凭据并建个人空间,不含密码) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AdminUserCreateRequest"];
+                };
+            };
+            responses: {
+                /** @description 已创建 */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AdminUserView"];
+                    };
+                };
+                /** @description 非法参数(用户名为空/角色不合法) */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description 用户名或邮箱冲突 */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** 管理员更新用户(角色/状态) */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AdminUserUpdateRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AdminUserView"];
+                    };
+                };
+                /** @description 非法参数(角色/状态不合法或无修改字段) */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description 用户不存在 */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/admin/spaces": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 管理员列出全部空间 */
+        get: {
+            parameters: {
+                query?: {
+                    search?: string;
+                    kind?: string;
+                    frozen?: boolean;
+                    limit?: number;
+                    offset?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AdminSpaceListResult"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/spaces/{id}/quota": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** 管理员设置空间配额与预警阈值 */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SpaceQuotaRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SpaceQuotaResult"];
+                    };
+                };
+                /** @description 非法参数(配额<0 / 预警越界 / 无修改字段) */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+                /** @description 空间不存在 */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/admin/spaces/{id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 管理员收回空间(冻结并清空成员;文件不删) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SpaceRevokeResult"];
+                    };
+                };
+                /** @description 空间不存在 */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2145,6 +2438,90 @@ export interface components {
             name: string;
             parent_id?: string;
             children?: components["schemas"]["DepartmentNode"][];
+        };
+        AdminUserView: {
+            id: string;
+            username: string;
+            display_name: string;
+            avatar_url?: string;
+            /** @description super_admin / dept_admin / user */
+            role: string;
+            /** @description active / disabled / pending */
+            status: string;
+            email?: string;
+            /** Format: int64 */
+            token_version?: number;
+            created_at?: string;
+            updated_at?: string;
+            last_login_at?: string | null;
+        };
+        AdminUserListResult: {
+            users: components["schemas"]["AdminUserView"][];
+            total: number;
+            limit: number;
+            offset: number;
+        };
+        AdminUserCreateRequest: {
+            username: string;
+            email?: string;
+            display_name?: string;
+            /** @description super_admin / dept_admin / user;缺省 user */
+            role?: string;
+        };
+        AdminUserUpdateRequest: {
+            /** @description super_admin / dept_admin / user */
+            role?: string | null;
+            /** @description active / disabled / pending */
+            status?: string | null;
+        };
+        AdminSpaceView: {
+            id: string;
+            /** @description personal / team */
+            kind: string;
+            name: string;
+            owner_id: string;
+            owner_username?: string;
+            owner_display_name?: string;
+            /** Format: int64 */
+            quota_bytes: number;
+            /** Format: int64 */
+            used_bytes: number;
+            warn_percent?: number;
+            /** Format: double */
+            used_percent?: number;
+            frozen: boolean;
+            member_count?: number;
+            /** Format: int64 */
+            files_count?: number;
+            created_at?: string;
+        };
+        AdminSpaceListResult: {
+            spaces: components["schemas"]["AdminSpaceView"][];
+            total: number;
+        };
+        SpaceQuotaRequest: {
+            /**
+             * Format: int64
+             * @description 字节;0=不限制;<0 拒绝
+             */
+            quota_bytes?: number | null;
+            /** @description 1..100 */
+            warn_percent?: number | null;
+        };
+        SpaceQuotaResult: {
+            id: string;
+            /** Format: int64 */
+            quota_bytes: number;
+            /** Format: int64 */
+            used_bytes: number;
+            warn_percent: number;
+        };
+        SpaceRevokeResult: {
+            id: string;
+            frozen: boolean;
+            members_removed: number;
+            /** @description 已收回访问权(冻结并清空成员);空间内文件未删除 */
+            note?: string;
         };
     };
     responses: {

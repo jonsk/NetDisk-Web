@@ -1,5 +1,5 @@
 /**
- * 落地页专用 API 封装(无 @netdisk/api 依赖,直接 fetch)。
+ * 落地页专用 API 封装(统一走 @netdisk/api 契约单源客户端,不再手写 fetch/DTO)。
  *
  * 只调两个**免登录**接口(后端 handlers_share.go):
  *   - GET  /api/v1/shares/{token}/meta   → ShareMeta
@@ -7,20 +7,21 @@
  *
  * 失效统一由服务端回 **410 + {code:"resource_gone", details:{reason}}**,
  * reason ∈ {expired, revoked, download_limit_reached}。这里按 reason 分流文案。
+ * 类型全部来自契约:@netdisk/api 已 `export type ShareMeta = Schema["ShareMeta"]`,
+ * 这里只做 re-export,不再手写同名类型(FE-W-02 契约单源)。
  */
 
-export interface ShareMeta {
-  token: string;
-  name: string;
-  /** Format: int64 */
-  size: number;
-  is_dir: boolean;
-  need_password: boolean;
-  expires_at?: string;
-  download_count?: number;
-  max_downloads?: number;
-  mime_type?: string;
-}
+import {
+  Client,
+  APIError,
+  parseError,
+  type ShareMeta,
+} from "@netdisk/api";
+
+export type { ShareMeta };
+
+/** 免登录访客客户端(无 token;落地页所有调用都不带令牌)。 */
+const client = new Client();
 
 export type LoadError =
   | { kind: "gone"; reason: string }
@@ -32,34 +33,42 @@ export type DownloadError =
   | { kind: "gone"; reason: string }
   | { kind: "error"; status: number };
 
-interface APIErrorBody {
-  code?: string;
-  message?: string;
-  details?: Record<string, unknown>;
-  request_id?: string;
-}
-
-async function readErr(res: Response): Promise<APIErrorBody> {
-  try {
-    return (await res.json()) as APIErrorBody;
-  } catch {
-    return {};
+/** 加载(META)错误分流:410=gone(按 reason),404=notfound,其余=error。 */
+function toLoadError(e: unknown): LoadError {
+  if (e instanceof APIError) {
+    if (e.status === 410) {
+      return { kind: "gone", reason: (e.details?.reason as string) ?? "revoked" };
+    }
+    if (e.status === 404) {
+      return { kind: "notfound" };
+    }
+    return { kind: "error", status: e.status };
   }
+  return { kind: "error", status: 0 };
 }
 
-function gone(res: Response, fallback: string): Promise<LoadError | DownloadError> {
-  return readErr(res).then((b) => ({
-    kind: "gone",
-    reason: (b.details?.reason as string) ?? fallback,
-  }));
+/** 下载错误分流:401=密码错误,410=gone(按 reason),其余=error。 */
+function toDownloadError(e: unknown): DownloadError {
+  if (e instanceof APIError) {
+    if (e.status === 401) {
+      return { kind: "badpassword" };
+    }
+    if (e.status === 410) {
+      return { kind: "gone", reason: (e.details?.reason as string) ?? "revoked" };
+    }
+    return { kind: "error", status: e.status };
+  }
+  return { kind: "error", status: 0 };
 }
 
 export async function fetchMeta(token: string): Promise<ShareMeta> {
-  const res = await fetch(`/api/v1/shares/${encodeURIComponent(token)}/meta`);
-  if (res.ok) return (await res.json()) as ShareMeta;
-  if (res.status === 410) return Promise.reject(await gone(res, "revoked"));
-  if (res.status === 404) return Promise.reject({ kind: "notfound" } as LoadError);
-  return Promise.reject({ kind: "error", status: res.status } as LoadError);
+  try {
+    return await client.request<ShareMeta>(
+      `/api/v1/shares/${encodeURIComponent(token)}/meta`,
+    );
+  } catch (e) {
+    throw toLoadError(e);
+  }
 }
 
 export async function download(
@@ -68,14 +77,21 @@ export async function download(
 ): Promise<{ blob: Blob; filename: string }> {
   const headers: Record<string, string> = {};
   if (password) headers["X-Share-Password"] = password;
-  const res = await fetch(`/api/v1/shares/${encodeURIComponent(token)}/download`, { headers });
-  if (res.ok) {
+  try {
+    const res = await client.send(
+      `/api/v1/shares/${encodeURIComponent(token)}/download`,
+      { headers },
+    );
+    if (!res.ok) {
+      // send 返回原始 Response 不抛错,非 2xx 需自行解析为 APIError 再分流
+      const text = await res.text();
+      throw parseError(res.status, text);
+    }
     const blob = await res.blob();
     return { blob, filename: parseFilename(res.headers.get("content-disposition") ?? "") };
+  } catch (e) {
+    throw toDownloadError(e);
   }
-  if (res.status === 401) return Promise.reject({ kind: "badpassword" } as DownloadError);
-  if (res.status === 410) return Promise.reject(await gone(res, "revoked"));
-  return Promise.reject({ kind: "error", status: res.status } as DownloadError);
 }
 
 /** 从 Content-Disposition 解析文件名(RFC 5987 优先)。 */

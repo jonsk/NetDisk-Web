@@ -60,6 +60,9 @@ importers:
 
   apps/landing:
     dependencies:
+      '@netdisk/api':
+        specifier: workspace:*
+        version: link:../../packages/api
       vue:
         specifier: ^3.5.13
         version: 3.5.42(typescript@5.9.3)

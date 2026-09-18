@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { fetchMeta, download, type ShareMeta, type LoadError, type DownloadError } from "./api";
-import { i18n, toggleLocale } from "./i18n";
+import { toggleLocale } from "./i18n";
 
 const { t } = useI18n();
 
